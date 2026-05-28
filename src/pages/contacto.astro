@@ -1,0 +1,32 @@
+---
+import Layout from "../layouts/Layout.astro";
+---
+
+<Layout title="Contacto" description="Contacta con Phantom Rugs Studio para encargos y consultas.">
+  <section class="page-header">
+    <h1>Contacto</h1>
+    <p>Para encargos personalizados, consultas o colaboraciones.</p>
+  </section>
+
+  <section class="contact-form">
+    <form method="POST">
+      <label>
+        Nombre
+        <input type="text" name="name" required />
+      </label>
+      <label>
+        Email
+        <input type="email" name="email" required />
+      </label>
+      <label>
+        Mensaje
+        <textarea name="message" rows="5" required></textarea>
+      </label>
+      <button type="submit">Enviar</button>
+    </form>
+  </section>
+
+  <section class="contact-info">
+    <!-- Redes sociales, email directo, ubicación del estudio -->
+  </section>
+</Layout>

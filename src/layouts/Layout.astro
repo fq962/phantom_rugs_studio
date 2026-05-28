@@ -1,0 +1,44 @@
+---
+import "../styles/global.css";
+
+interface Props {
+  title: string;
+  description?: string;
+}
+
+const { title, description = "Phantom Rugs Studio — Handcrafted rugs with soul." } = Astro.props;
+---
+
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" href="/favicon.ico" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="generator" content={Astro.generator} />
+    <meta name="description" content={description} />
+    <title>{title} — Phantom Rugs Studio</title>
+  </head>
+  <body>
+    <header>
+      <nav>
+        <a href="/" class="logo">Phantom Rugs Studio</a>
+        <ul>
+          <li><a href="/">Inicio</a></li>
+          <li><a href="/portfolio">Portfolio</a></li>
+          <li><a href="/proceso">Proceso</a></li>
+          <li><a href="/nosotros">Nosotros</a></li>
+          <li><a href="/contacto">Contacto</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <main>
+      <slot />
+    </main>
+
+    <footer>
+      <p>&copy; {new Date().getFullYear()} Phantom Rugs Studio. Todos los derechos reservados.</p>
+    </footer>
+  </body>
+</html>
