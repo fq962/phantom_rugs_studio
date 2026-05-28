@@ -1,5 +1,5 @@
 ---
-import Layout from "../../layouts/Layout.astro";
+import Layout from "../layouts/Layout.astro";
 
 const rugs = [
   { id: "01", title: "Umbra",     year: "2024", size: "200 × 300 cm", technique: "Tufting"      },
@@ -11,16 +11,16 @@ const rugs = [
 ];
 ---
 
-<Layout title="Rugs" description="All pieces by Phantom Rugs Studio.">
+<Layout title="Alfombras" description="Todas las piezas de Phantom Rugs Studio.">
 
   <!-- Header -->
   <section class="px-6 md:px-12 pt-8 pb-10 border-b border-stone-100 flex flex-col md:flex-row md:items-end md:justify-between gap-4">
     <div>
       <p class="font-body text-xs tracking-[0.3em] text-stone-400 uppercase mb-3">
-        {rugs.length} pieces
+        {rugs.length} piezas
       </p>
       <h1 class="font-display text-[clamp(2.5rem,7vw,5rem)] text-stone-900 leading-none tracking-wide">
-        RUGS
+        ALFOMBRAS
       </h1>
     </div>
   </section>
@@ -35,18 +35,26 @@ const rugs = [
           data-available={rug.available}
           data-index={i}
         >
+          <!-- Image -->
           <div class="relative overflow-hidden aspect-square bg-stone-50">
             <img
               src="/rugs/rug_example.png"
               alt={rug.title}
               class="w-full h-full object-cover grayscale group-hover:grayscale-0 scale-100 group-hover:scale-105 transition-all duration-700 ease-out"
             />
+
+            <!-- Sold out ribbon -->
+
+            <!-- Hover overlay -->
             <div class="absolute inset-0 bg-stone-900/0 group-hover:bg-stone-900/10 transition-colors duration-500" />
+
+            <!-- Number decorativo -->
             <span class="absolute bottom-3 right-4 font-display text-[4rem] leading-none text-stone-900/[0.06] select-none group-hover:text-stone-900/10 transition-colors">
               {rug.id}
             </span>
           </div>
 
+          <!-- Info -->
           <div class="px-5 py-4 flex items-start justify-between gap-4 border-t border-stone-100">
             <div>
               <h2 class="font-display text-xl tracking-widest text-stone-900 leading-tight">
@@ -83,9 +91,14 @@ const rugs = [
   .rug-card.hidden-card {
     display: none;
   }
+  .filter-btn.active {
+    color: rgb(28 25 23);
+    border-bottom: 1px solid rgb(28 25 23);
+  }
 </style>
 
 <script>
+  // Entrada escalonada
   const cards = document.querySelectorAll<HTMLElement>('.rug-card');
 
   const observer = new IntersectionObserver((entries) => {
