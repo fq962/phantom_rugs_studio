@@ -5,10 +5,10 @@ const lang = getLangFromUrl(Astro.url);
 const t = useTranslations(lang);
 
 const links = [
-  { key: 'nav.home' as const,    href: '/'          },
-  { key: 'nav.rugs' as const,    href: '/alfombras'  },
-  { key: 'nav.about' as const,   href: '/sobre-mi'   },
-  { key: 'nav.contact' as const, href: '/contacto'   },
+  { key: 'nav.home' as const,    href: '/',          disabled: false },
+  { key: 'nav.rugs' as const,    href: '/alfombras',  disabled: false },
+  { key: 'nav.about' as const,   href: '/#sobre-mi',  disabled: false },
+  { key: 'nav.contact' as const, href: null,           disabled: true  },
 ];
 
 const altLang = lang === 'es' ? 'en' : 'es';
@@ -38,15 +38,21 @@ const alt     = langLabels[altLang];
 
     <!-- Desktop links -->
     <ul class="hidden md:flex items-center gap-10">
-      {links.map(({ key, href }) => (
+      {links.map(({ key, href, disabled }) => (
         <li>
-          <a
-            href={getLocalizedPath(href, lang)}
-            class="font-body text-xs uppercase tracking-[0.2em] text-stone-500 hover:text-stone-900 transition-colors relative group"
-          >
-            {t(key)}
-            <span class="absolute -bottom-1 left-0 w-0 h-px bg-stone-900 group-hover:w-full transition-all duration-300" />
-          </a>
+          {disabled ? (
+            <span class="font-body text-xs uppercase tracking-[0.2em] text-stone-300 cursor-default select-none">
+              {t(key)}
+            </span>
+          ) : (
+            <a
+              href={href ?? '#'}
+              class="font-body text-xs uppercase tracking-[0.2em] text-stone-500 hover:text-stone-900 transition-colors relative group"
+            >
+              {t(key)}
+              <span class="absolute -bottom-1 left-0 w-0 h-px bg-stone-900 group-hover:w-full transition-all duration-300" />
+            </a>
+          )}
         </li>
       ))}
     </ul>
@@ -131,16 +137,25 @@ const alt     = langLabels[altLang];
   </span>
 
   <ul class="flex flex-col gap-2">
-    {links.map(({ key, href }, i) => (
+    {links.map(({ key, href, disabled }, i) => (
       <li>
-        <a
-          href={getLocalizedPath(href, lang)}
-          class="block font-display text-[clamp(3rem,12vw,5rem)] text-white leading-tight
-                 hover:text-stone-400 transition-colors duration-200"
-          style={`transition-delay: ${i * 60}ms`}
-        >
-          {t(key)}
-        </a>
+        {disabled ? (
+          <span
+            class="block font-display text-[clamp(3rem,12vw,5rem)] text-stone-600 leading-tight cursor-default select-none"
+            style={`transition-delay: ${i * 60}ms`}
+          >
+            {t(key)}
+          </span>
+        ) : (
+          <a
+            href={href ?? '#'}
+            class="block font-display text-[clamp(3rem,12vw,5rem)] text-white leading-tight
+                   hover:text-stone-400 transition-colors duration-200"
+            style={`transition-delay: ${i * 60}ms`}
+          >
+            {t(key)}
+          </a>
+        )}
       </li>
     ))}
   </ul>
