@@ -12,7 +12,7 @@ const links = [
 ];
 
 const altLang = lang === 'es' ? 'en' : 'es';
-const currentPath = Astro.url.pathname.replace(/^\/(en|es)/, '') || '/';
+const currentPath = Astro.url.pathname.replace(/^\/(en|es)/, '').replace(/\/$/, '') || '/';
 const altLangPath = getLocalizedPath(currentPath, altLang);
 
 const langLabels = {

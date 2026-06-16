@@ -25,14 +25,14 @@ type RouteKey = keyof typeof routes;
 export function getLocalizedPath(path: string, lang: string): string {
   const locale = lang as 'es' | 'en';
   const prefix = locale === defaultLang ? '' : `/${locale}`;
+  const normalizedPath = path.replace(/\/$/, '') || '/';
 
-  // Translate slug when switching between locales
   for (const key of Object.keys(routes) as RouteKey[]) {
     const entry = routes[key];
-    if (path === entry.es || path === entry.en) {
+    if (normalizedPath === entry.es || normalizedPath === entry.en) {
       return `${prefix}${entry[locale]}`;
     }
   }
 
-  return `${prefix}${path}`;
+  return `${prefix}${normalizedPath}`;
 }
