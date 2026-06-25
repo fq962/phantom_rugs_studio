@@ -1,36 +1,6 @@
 ---
 import Layout from "../../layouts/Layout.astro";
-
-const pieces = [
-  {
-    id: "01",
-    title: "Umbra",
-    year: "2024",
-    size: "200 × 300 cm",
-    technique: "Tufting",
-  },
-  {
-    id: "02",
-    title: "Sediment",
-    year: "2024",
-    size: "160 × 240 cm",
-    technique: "Hand-knotted",
-  },
-  {
-    id: "03",
-    title: "Veil",
-    year: "2023",
-    size: "120 × 180 cm",
-    technique: "Flatweave",
-  },
-  {
-    id: "04",
-    title: "Threshold",
-    year: "2023",
-    size: "240 × 340 cm",
-    technique: "Tufting",
-  },
-];
+import { phantomRug } from "../../data/rugs";
 ---
 
 <Layout title="Home">
@@ -154,135 +124,44 @@ const pieces = [
       </a>
     </div>
 
-    <div class="grid grid-cols-1 md:grid-cols-12 gap-4 md:gap-3">
+    <div
+      class="piece group relative overflow-hidden bg-stone-100 cursor-none aspect-square w-full max-w-xs mx-auto md:mx-0"
+      data-index="0"
+      data-gallery={JSON.stringify(phantomRug.images)}
+    >
+      <img
+        src={phantomRug.images[0]}
+        alt={phantomRug.title}
+        class="w-full h-full object-cover grayscale group-hover:grayscale-0 scale-100 group-hover:scale-105 transition-all duration-700 ease-out"
+      />
       <div
-        class="piece md:col-span-7 md:row-span-2 group relative overflow-hidden bg-stone-100 cursor-none aspect-[4/5] md:aspect-auto md:min-h-[680px]"
-        data-index="0"
+        class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent translate-y-4 opacity-0 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-500"
       >
-        <img
-          src="/rugs/rug_example.png"
-          alt={pieces[0].title}
-          class="w-full h-full object-cover grayscale group-hover:grayscale-0 scale-100 group-hover:scale-105 transition-all duration-700 ease-out"
-        />
-        <div
-          class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent translate-y-4 opacity-0 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-500"
-        >
-        </div>
-        <div
-          class="absolute bottom-0 left-0 right-0 p-6 translate-y-4 opacity-0 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-500 delay-75"
-        >
-          <span
-            class="font-display text-[5rem] leading-none text-white/10 absolute bottom-4 right-4 select-none"
-            >{pieces[0].id}</span
-          >
-          <p
-            class="font-body text-[10px] tracking-[0.3em] text-white/60 uppercase mb-1"
-          >
-            {pieces[0].technique} · {pieces[0].year}
-          </p>
-          <h3 class="font-display text-4xl text-white tracking-widest">
-            {pieces[0].title}
-          </h3>
-          <p class="font-body text-xs text-white/50 mt-1">{pieces[0].size}</p>
-        </div>
-        <div
-          class="cursor-dot absolute w-16 h-16 rounded-full border border-white/60 flex items-center justify-center pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-300 -translate-x-1/2 -translate-y-1/2 backdrop-blur-sm"
-          style="top:50%;left:50%"
-        >
-          <span
-            class="font-body text-[9px] tracking-[0.2em] text-white uppercase"
-            >View</span
-          >
-        </div>
       </div>
-
       <div
-        class="piece md:col-span-5 group relative overflow-hidden bg-stone-100 cursor-none aspect-[3/2] md:aspect-auto md:h-[328px]"
-        data-index="1"
+        class="absolute bottom-0 left-0 right-0 p-6 translate-y-4 opacity-0 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-500 delay-75"
       >
-        <img
-          src="/rugs/rug_example.png"
-          alt={pieces[1].title}
-          class="w-full h-full object-cover grayscale group-hover:grayscale-0 scale-100 group-hover:scale-105 transition-all duration-700 ease-out"
-        />
-        <div
-          class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent translate-y-4 opacity-0 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-500"
+        <span
+          class="font-display text-[5rem] leading-none text-white/10 absolute bottom-4 right-4 select-none"
+          >{phantomRug.id}</span
         >
-        </div>
-        <div
-          class="absolute bottom-0 left-0 right-0 p-5 translate-y-4 opacity-0 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-500 delay-75"
+        <p
+          class="font-body text-[10px] tracking-[0.3em] text-white/60 uppercase mb-1"
         >
-          <span
-            class="font-display text-[4rem] leading-none text-white/10 absolute bottom-2 right-4 select-none"
-            >{pieces[1].id}</span
-          >
-          <p
-            class="font-body text-[10px] tracking-[0.3em] text-white/60 uppercase mb-1"
-          >
-            {pieces[1].technique} · {pieces[1].year}
-          </p>
-          <h3 class="font-display text-3xl text-white tracking-widest">
-            {pieces[1].title}
-          </h3>
-        </div>
+          {phantomRug.technique} · {phantomRug.year}
+        </p>
+        <h3 class="font-display text-4xl text-white tracking-widest">
+          {phantomRug.title}
+        </h3>
       </div>
-
       <div
-        class="piece md:col-span-3 group relative overflow-hidden bg-stone-200 cursor-none aspect-[3/2] md:aspect-auto md:h-[340px]"
-        data-index="2"
+        class="cursor-dot absolute w-16 h-16 rounded-full border border-white/60 flex items-center justify-center pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-300 -translate-x-1/2 -translate-y-1/2 backdrop-blur-sm"
+        style="top:50%;left:50%"
       >
-        <img
-          src="/rugs/rug_example.png"
-          alt={pieces[2].title}
-          class="w-full h-full object-cover grayscale group-hover:grayscale-0 scale-100 group-hover:scale-105 transition-all duration-700 ease-out"
-        />
-        <div
-          class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent translate-y-4 opacity-0 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-500"
+        <span
+          class="font-body text-[9px] tracking-[0.2em] text-white uppercase"
+          >View</span
         >
-        </div>
-        <div
-          class="absolute bottom-0 left-0 right-0 p-5 translate-y-4 opacity-0 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-500 delay-75"
-        >
-          <p
-            class="font-body text-[10px] tracking-[0.3em] text-white/60 uppercase mb-1"
-          >
-            {pieces[2].year}
-          </p>
-          <h3 class="font-display text-2xl text-white tracking-widest">
-            {pieces[2].title}
-          </h3>
-        </div>
-      </div>
-
-      <div
-        class="piece md:col-span-2 group relative overflow-hidden bg-stone-300 cursor-none aspect-[3/2] md:aspect-auto md:h-[340px]"
-        data-index="3"
-      >
-        <img
-          src="/rugs/rug_example.png"
-          alt={pieces[3].title}
-          class="w-full h-full object-cover grayscale group-hover:grayscale-0 scale-100 group-hover:scale-105 transition-all duration-700 ease-out"
-        />
-        <div
-          class="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent translate-y-4 opacity-0 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-500"
-        >
-        </div>
-        <div
-          class="absolute bottom-0 left-0 right-0 p-5 translate-y-4 opacity-0 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-500 delay-75"
-        >
-          <span
-            class="font-display text-[3.5rem] leading-none text-white/10 absolute bottom-2 right-3 select-none"
-            >{pieces[3].id}</span
-          >
-          <p
-            class="font-body text-[10px] tracking-[0.3em] text-white/60 uppercase mb-1"
-          >
-            {pieces[3].year}
-          </p>
-          <h3 class="font-display text-2xl text-white tracking-widest">
-            {pieces[3].title}
-          </h3>
-        </div>
       </div>
     </div>
   </section>
@@ -306,31 +185,24 @@ const pieces = [
         </h2>
         <div class="space-y-4">
           <p class="font-body text-sm leading-relaxed text-stone-500">
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do
-            eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim
-            ad minim veniam, quis nostrud exercitation ullamco laboris.
+            Phantom Rugs Studio was born from an idea inspired by social
+            media, where we discovered the art of tufting and saw the
+            opportunity to turn a hobby into something much bigger. What
+            started as a curiosity to create unique pieces gradually grew
+            into a true passion and the motivation to build our own
+            business.
           </p>
           <p class="font-body text-sm leading-relaxed text-stone-500">
-            Duis aute irure dolor in reprehenderit in voluptate velit esse
-            cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat
-            cupidatat non proident, sunt in culpa qui officia deserunt mollit
-            anim id est laborum.
+            Today, every rug we create reflects creativity, craftsmanship,
+            and our commitment to making custom pieces that genuinely
+            connect with the people who own them.
           </p>
         </div>
-        <a
-          href="/en/about"
-          class="inline-flex items-center gap-3 mt-10 font-body text-xs tracking-[0.25em] uppercase text-stone-900 group"
-        >
-          Read more
-          <span
-            class="block w-8 h-px bg-stone-900 group-hover:w-14 transition-all duration-300"
-          ></span>
-        </a>
       </div>
       <div class="relative">
         <div class="aspect-square overflow-hidden bg-stone-100">
           <img
-            src="/rugs/rug_example.png"
+            src="/main_logo_black.webp"
             alt="About me"
             class="w-full h-full object-cover"
           />

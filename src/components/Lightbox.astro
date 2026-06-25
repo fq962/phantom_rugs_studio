@@ -1,0 +1,114 @@
+---
+---
+
+<div
+  id="lightbox"
+  class="fixed inset-0 z-50 hidden items-center justify-center bg-stone-900/95 px-6"
+>
+  <button
+    id="lightbox-close"
+    aria-label="Cerrar"
+    class="absolute top-6 right-6 text-white/70 hover:text-white transition-colors"
+  >
+    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+      <path d="M6 6l12 12M18 6L6 18" />
+    </svg>
+  </button>
+
+  <button
+    id="lightbox-prev"
+    aria-label="Anterior"
+    class="absolute left-2 md:left-6 top-1/2 -translate-y-1/2 text-white/70 hover:text-white transition-colors p-2"
+  >
+    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+      <path d="M15 5l-7 7 7 7" />
+    </svg>
+  </button>
+
+  <img
+    id="lightbox-img"
+    src=""
+    alt=""
+    class="max-h-[80vh] max-w-[90vw] object-contain"
+  />
+
+  <button
+    id="lightbox-next"
+    aria-label="Siguiente"
+    class="absolute right-2 md:right-6 top-1/2 -translate-y-1/2 text-white/70 hover:text-white transition-colors p-2"
+  >
+    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+      <path d="M9 5l7 7-7 7" />
+    </svg>
+  </button>
+
+  <p
+    id="lightbox-counter"
+    class="absolute bottom-6 left-1/2 -translate-x-1/2 font-body text-xs tracking-[0.2em] text-white/50 uppercase"
+  >
+  </p>
+</div>
+
+<style>
+  #lightbox.flex {
+    display: flex;
+  }
+</style>
+
+<script>
+  let images: string[] = [];
+  let index = 0;
+
+  const lightbox = document.getElementById("lightbox") as HTMLElement;
+  const img = document.getElementById("lightbox-img") as HTMLImageElement;
+  const counter = document.getElementById("lightbox-counter") as HTMLElement;
+
+  function render() {
+    img.src = images[index];
+    counter.textContent = `${index + 1} / ${images.length}`;
+  }
+
+  function open(gallery: string[], startAt: number) {
+    images = gallery;
+    index = startAt;
+    render();
+    lightbox.classList.remove("hidden");
+    lightbox.classList.add("flex");
+  }
+
+  function close() {
+    lightbox.classList.add("hidden");
+    lightbox.classList.remove("flex");
+  }
+
+  function next() {
+    index = (index + 1) % images.length;
+    render();
+  }
+
+  function prev() {
+    index = (index - 1 + images.length) % images.length;
+    render();
+  }
+
+  document.getElementById("lightbox-close")?.addEventListener("click", close);
+  document.getElementById("lightbox-next")?.addEventListener("click", next);
+  document.getElementById("lightbox-prev")?.addEventListener("click", prev);
+  lightbox.addEventListener("click", (e) => {
+    if (e.target === lightbox) close();
+  });
+  document.addEventListener("keydown", (e) => {
+    if (lightbox.classList.contains("hidden")) return;
+    if (e.key === "Escape") close();
+    if (e.key === "ArrowRight") next();
+    if (e.key === "ArrowLeft") prev();
+  });
+
+  document.addEventListener("click", (e) => {
+    const trigger = (e.target as HTMLElement).closest<HTMLElement>("[data-gallery]");
+    if (!trigger) return;
+    const gallery = JSON.parse(trigger.dataset.gallery || "[]");
+    if (!gallery.length) return;
+    open(gallery, 0);
+  });
+</script>

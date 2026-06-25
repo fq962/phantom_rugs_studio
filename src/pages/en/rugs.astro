@@ -1,14 +1,8 @@
 ---
 import Layout from "../../layouts/Layout.astro";
+import { phantomRug } from "../../data/rugs";
 
-const rugs = [
-  { id: "01", title: "Umbra",     year: "2024", size: "200 × 300 cm", technique: "Tufting"      },
-  { id: "02", title: "Sediment",  year: "2024", size: "160 × 240 cm", technique: "Hand-knotted" },
-  { id: "03", title: "Veil",      year: "2023", size: "120 × 180 cm", technique: "Flatweave"    },
-  { id: "04", title: "Threshold", year: "2023", size: "240 × 340 cm", technique: "Tufting"      },
-  { id: "05", title: "Hollow",    year: "2023", size: "180 × 260 cm", technique: "Hand-knotted" },
-  { id: "06", title: "Drift",     year: "2022", size: "140 × 200 cm", technique: "Flatweave"    },
-];
+const rugs = [phantomRug];
 ---
 
 <Layout title="Rugs" description="All pieces by Phantom Rugs Studio.">
@@ -17,7 +11,7 @@ const rugs = [
   <section class="px-6 md:px-12 pt-8 pb-10 border-b border-stone-100 flex flex-col md:flex-row md:items-end md:justify-between gap-4">
     <div>
       <p class="font-body text-xs tracking-[0.3em] text-stone-400 uppercase mb-3">
-        {rugs.length} pieces
+        {rugs.length} piece{rugs.length === 1 ? "" : "s"}
       </p>
       <h1 class="font-display text-[clamp(2.5rem,7vw,5rem)] text-stone-900 leading-none tracking-wide">
         RUGS
@@ -32,12 +26,12 @@ const rugs = [
       {rugs.map((rug, i) => (
         <article
           class="rug-card bg-white group cursor-pointer"
-          data-available={rug.available}
           data-index={i}
+          data-gallery={JSON.stringify(rug.images)}
         >
           <div class="relative overflow-hidden aspect-square bg-stone-50">
             <img
-              src="/rugs/rug_example.png"
+              src={rug.images[0]}
               alt={rug.title}
               class="w-full h-full object-cover grayscale group-hover:grayscale-0 scale-100 group-hover:scale-105 transition-all duration-700 ease-out"
             />
@@ -57,8 +51,7 @@ const rugs = [
               </p>
             </div>
             <div class="text-right shrink-0">
-              <p class="font-body text-[11px] text-stone-400">{rug.size}</p>
-              <p class="font-body text-[11px] text-stone-300 mt-0.5">{rug.year}</p>
+              <p class="font-body text-[11px] text-stone-400">{rug.year}</p>
             </div>
           </div>
 
@@ -79,9 +72,6 @@ const rugs = [
   .rug-card.visible {
     opacity: 1;
     transform: translateY(0);
-  }
-  .rug-card.hidden-card {
-    display: none;
   }
 </style>
 
