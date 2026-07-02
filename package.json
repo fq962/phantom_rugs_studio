@@ -12,8 +12,13 @@
     "astro": "astro"
   },
   "dependencies": {
-    "@tailwindcss/vite": "^4.3.0",
+    "@astrojs/node": "^10.1.4",
+    "@tailwindcss/vite": "^4.3.2",
     "astro": "^6.4.2",
-    "tailwindcss": "^4.3.0"
+    "nodemailer": "^9.0.3",
+    "tailwindcss": "^4.3.2"
+  },
+  "devDependencies": {
+    "@types/nodemailer": "^8.0.1"
   }
 }

@@ -8,7 +8,7 @@ const links = [
   { key: 'nav.home' as const,    href: getLocalizedPath('/', lang),          disabled: false },
   { key: 'nav.rugs' as const,    href: getLocalizedPath('/alfombras', lang),  disabled: false },
   { key: 'nav.about' as const,   href: getLocalizedPath('/', lang) + '#sobre-mi', disabled: false },
-  { key: 'nav.contact' as const, href: null,                                  disabled: true  },
+  { key: 'nav.contact' as const, href: getLocalizedPath('/', lang) + '#contacto', disabled: false },
 ];
 
 const altLang = lang === 'es' ? 'en' : 'es';
