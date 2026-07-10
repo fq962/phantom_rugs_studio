@@ -1,7 +1,9 @@
 ---
 import Layout from "../layouts/Layout.astro";
 import ContactSection from "../components/ContactSection.astro";
-import { phantomRug } from "../data/rugs";
+import { phantomRug, rockstarRug } from "../data/rugs";
+
+const rugs = [phantomRug, rockstarRug];
 ---
 
 <Layout title="Inicio">
@@ -125,45 +127,49 @@ import { phantomRug } from "../data/rugs";
       </a>
     </div>
 
-    <div
-      class="piece group relative overflow-hidden bg-stone-100 cursor-none aspect-square w-full max-w-xs mx-auto md:mx-0"
-      data-index="0"
-      data-gallery={JSON.stringify(phantomRug.images)}
-    >
-      <img
-        src={phantomRug.images[0]}
-        alt={phantomRug.title}
-        class="w-full h-full object-cover grayscale group-hover:grayscale-0 scale-100 group-hover:scale-105 transition-all duration-700 ease-out"
-      />
-      <div
-        class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent translate-y-4 opacity-0 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-500"
-      >
-      </div>
-      <div
-        class="absolute bottom-0 left-0 right-0 p-6 translate-y-4 opacity-0 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-500 delay-75"
-      >
-        <span
-          class="font-display text-[5rem] leading-none text-white/10 absolute bottom-4 right-4 select-none"
-          >{phantomRug.id}</span
+    <div class="flex flex-wrap gap-6 justify-center md:justify-start">
+      {rugs.map((rug, i) => (
+        <div
+          class="piece group relative overflow-hidden bg-stone-100 cursor-none aspect-square w-full max-w-xs"
+          data-index={i}
+          data-gallery={JSON.stringify(rug.images)}
         >
-        <p
-          class="font-body text-[10px] tracking-[0.3em] text-white/60 uppercase mb-1"
-        >
-          {phantomRug.technique} · {phantomRug.year}
-        </p>
-        <h3 class="font-display text-4xl text-white tracking-widest">
-          {phantomRug.title}
-        </h3>
-      </div>
-      <div
-        class="cursor-dot absolute w-16 h-16 rounded-full border border-white/60 flex items-center justify-center pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-300 -translate-x-1/2 -translate-y-1/2 backdrop-blur-sm"
-        style="top:50%;left:50%"
-      >
-        <span
-          class="font-body text-[9px] tracking-[0.2em] text-white uppercase"
-          >Ver</span
-        >
-      </div>
+          <img
+            src={rug.images[0]}
+            alt={rug.title}
+            class="w-full h-full object-cover grayscale group-hover:grayscale-0 scale-100 group-hover:scale-105 transition-all duration-700 ease-out"
+          />
+          <div
+            class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent translate-y-4 opacity-0 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-500"
+          >
+          </div>
+          <div
+            class="absolute bottom-0 left-0 right-0 p-6 translate-y-4 opacity-0 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-500 delay-75"
+          >
+            <span
+              class="font-display text-[5rem] leading-none text-white/10 absolute bottom-4 right-4 select-none"
+              >{rug.id}</span
+            >
+            <p
+              class="font-body text-[10px] tracking-[0.3em] text-white/60 uppercase mb-1"
+            >
+              {rug.technique} · {rug.year}
+            </p>
+            <h3 class="font-display text-4xl text-white tracking-widest">
+              {rug.title}
+            </h3>
+          </div>
+          <div
+            class="cursor-dot absolute w-16 h-16 rounded-full border border-white/60 flex items-center justify-center pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-300 -translate-x-1/2 -translate-y-1/2 backdrop-blur-sm"
+            style="top:50%;left:50%"
+          >
+            <span
+              class="font-body text-[9px] tracking-[0.2em] text-white uppercase"
+              >Ver</span
+            >
+          </div>
+        </div>
+      ))}
     </div>
   </section>
 
@@ -385,16 +391,15 @@ import { phantomRug } from "../data/rugs";
   );
   pieces.forEach((p) => observer.observe(p));
 
-  // ── Cursor dot en pieza grande ───────────────────────────
-  const bigPiece = document.querySelector<HTMLElement>(
-    '.piece[data-index="0"]',
-  );
-  const dot = bigPiece?.querySelector<HTMLElement>(".cursor-dot");
-  bigPiece?.addEventListener("mousemove", (e) => {
-    if (!dot) return;
-    const rect = bigPiece.getBoundingClientRect();
-    dot.style.left = `${e.clientX - rect.left}px`;
-    dot.style.top = `${e.clientY - rect.top}px`;
+  // ── Cursor dot en cada pieza ─────────────────────────────
+  pieces.forEach((piece) => {
+    const dot = piece.querySelector<HTMLElement>(".cursor-dot");
+    piece.addEventListener("mousemove", (e) => {
+      if (!dot) return;
+      const rect = piece.getBoundingClientRect();
+      dot.style.left = `${e.clientX - rect.left}px`;
+      dot.style.top = `${e.clientY - rect.top}px`;
+    });
   });
 
   // ── Yarn entrada escalonada ─────────────────────────────
