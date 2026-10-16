@@ -2,6 +2,7 @@ export const prerender = false;
 
 import type { APIRoute } from "astro";
 import nodemailer from "nodemailer";
+import { SMTP_HOST, SMTP_PORT, SMTP_USER, SMTP_PASS } from "astro:env/server";
 
 const ALLOWED_EXT = ["png", "jpg", "jpeg", "webp", "heic", "heif"];
 const MAX_SIZE = 10 * 1024 * 1024; // 10 MB
@@ -47,7 +48,6 @@ export const POST: APIRoute = async ({ request }) => {
     });
   }
 
-  const { SMTP_HOST, SMTP_PORT, SMTP_USER, SMTP_PASS } = import.meta.env;
   if (!SMTP_HOST || !SMTP_USER || !SMTP_PASS) {
     console.error(
       "[contact] Missing SMTP_HOST / SMTP_USER / SMTP_PASS env vars",
@@ -55,7 +55,7 @@ export const POST: APIRoute = async ({ request }) => {
     return json(500, { ok: false, error: "server_misconfigured" });
   }
 
-  const port = Number(SMTP_PORT ?? 465);
+  const port = SMTP_PORT;
   const transporter = nodemailer.createTransport({
     host: SMTP_HOST,
     port,

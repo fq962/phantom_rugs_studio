@@ -8,17 +8,19 @@
   "scripts": {
     "dev": "astro dev",
     "build": "astro build",
-    "preview": "astro preview",
-    "astro": "astro"
+    "preview": "astro build && wrangler dev",
+    "astro": "astro",
+    "deploy": "astro build && wrangler deploy"
   },
   "dependencies": {
-    "@astrojs/vercel": "^10.0.8",
+    "@astrojs/cloudflare": "^13.7.0",
     "@tailwindcss/vite": "^4.3.2",
     "astro": "^6.4.2",
     "nodemailer": "^9.0.3",
     "tailwindcss": "^4.3.2"
   },
   "devDependencies": {
-    "@types/nodemailer": "^8.0.1"
+    "@types/nodemailer": "^8.0.1",
+    "wrangler": "^4.151.0"
   }
 }

@@ -3,11 +3,12 @@ export const prerender = false;
 
 import Layout from "../../layouts/Layout.astro";
 import QuoteCalculator from "../../components/QuoteCalculator.astro";
+import { ADMIN_PASSWORD } from "astro:env/server";
 
 const COOKIE = "prs_admin";
 const PATH = "/admin/quote";
 const SESSION_HOURS = 8;
-const password = import.meta.env.ADMIN_PASSWORD;
+const password = ADMIN_PASSWORD;
 
 async function sha256(text: string) {
   const buf = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(text));
