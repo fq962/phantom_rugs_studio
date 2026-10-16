@@ -1,0 +1,650 @@
+---
+import { getLangFromUrl, useTranslations } from "../i18n/utils";
+
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
+
+const labelCls =
+  "block font-body text-[11px] tracking-[0.2em] text-stone-400 uppercase mb-1";
+const inputCls =
+  "w-full bg-transparent border-b border-stone-200 focus:border-stone-900 outline-none py-2 font-body text-sm text-stone-900 transition-colors";
+const sectionCls =
+  "font-body text-xs tracking-[0.3em] text-stone-400 uppercase mb-5";
+const pillCls =
+  "block px-5 py-2.5 border border-stone-200 font-body text-xs uppercase tracking-[0.2em] text-stone-500 peer-checked:bg-stone-900 peer-checked:text-white peer-checked:border-stone-900 cursor-pointer transition-colors select-none";
+---
+
+<section
+  id="quote-calc"
+  class="px-6 md:px-12 py-12 md:py-16"
+  data-rolls={t("quote.rolls")}
+  data-short={t("quote.yarnShort")}
+  data-ok={t("quote.yarnOk")}
+>
+  <div class="grid grid-cols-1 lg:grid-cols-[1fr_400px] gap-12 lg:gap-16 items-start">
+
+    <!-- ===== Inputs ===== -->
+    <div class="flex flex-col gap-12">
+
+      <!-- Medidas -->
+      <div>
+        <h2 class={sectionCls}>{t("quote.measures")}</h2>
+        <div class="grid grid-cols-2 gap-6 max-w-md">
+          <label class="block">
+            <span class={labelCls}>{t("quote.width")}</span>
+            <input id="qc-width" type="number" min="1" inputmode="numeric" value="100" class={inputCls} />
+          </label>
+          <label class="block">
+            <span class={labelCls}>{t("quote.height")}</span>
+            <input id="qc-height" type="number" min="1" inputmode="numeric" value="150" class={inputCls} />
+          </label>
+        </div>
+      </div>
+
+      <!-- Imagen de referencia -->
+      <div>
+        <h2 class={sectionCls}>{t("quote.refImage")}</h2>
+        <p class="font-body text-xs leading-relaxed text-stone-400 max-w-lg mb-6">
+          {t("quote.refHint")}
+        </p>
+        <input id="qc-ref-file" type="file" accept="image/*" class="sr-only" />
+        <label
+          id="qc-ref-drop"
+          for="qc-ref-file"
+          class="flex flex-col items-center justify-center gap-1 max-w-md h-40 border border-dashed border-stone-300
+                 hover:border-stone-900 cursor-pointer transition-colors select-none"
+        >
+          <span class="font-body text-xs uppercase tracking-[0.2em] text-stone-700">{t("quote.refUpload")}</span>
+          <span class="font-body text-[11px] text-stone-400">{t("quote.refDrop")}</span>
+        </label>
+        <div id="qc-ref-preview" class="hidden max-w-md">
+          <img id="qc-ref-img" alt={t("quote.refAlt")} class="w-full max-h-72 object-contain bg-stone-50" />
+          <div class="flex gap-6 mt-3">
+            <label
+              for="qc-ref-file"
+              class="font-body text-xs uppercase tracking-[0.2em] text-stone-500 hover:text-stone-900 border-b border-stone-300 hover:border-stone-900 pb-0.5 transition-colors cursor-pointer"
+            >{t("quote.refChange")}</label>
+            <button
+              id="qc-ref-remove"
+              type="button"
+              class="font-body text-xs uppercase tracking-[0.2em] text-stone-500 hover:text-stone-900 border-b border-stone-300 hover:border-stone-900 pb-0.5 transition-colors cursor-pointer"
+            >{t("quote.refRemove")}</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Hilos / ovillos -->
+      <div>
+        <h2 class={sectionCls}>{t("quote.yarns")}</h2>
+        <p class="font-body text-xs leading-relaxed text-stone-400 max-w-lg mb-6">
+          {t("quote.yarnHint")}
+        </p>
+        <div id="qc-yarns" class="flex flex-col gap-5"></div>
+        <p id="qc-yarn-status" class="font-body text-[11px] mt-4 empty:hidden"></p>
+        <button
+          id="qc-add-yarn"
+          type="button"
+          class="mt-6 font-body text-xs uppercase tracking-[0.2em] text-stone-500 hover:text-stone-900 border-b border-stone-300 hover:border-stone-900 pb-0.5 transition-colors cursor-pointer"
+        >
+          {t("quote.addYarn")}
+        </button>
+      </div>
+
+      <!-- Complejidad -->
+      <div>
+        <h2 class={sectionCls}>{t("quote.complexity")}</h2>
+        <div class="flex flex-wrap gap-3">
+          <label>
+            <input type="radio" name="qc-cx" value="1" class="peer sr-only" checked />
+            <span class={pillCls} data-cx-label>{t("quote.cxSimple")}</span>
+          </label>
+          <label>
+            <input type="radio" name="qc-cx" value="1.3" class="peer sr-only" />
+            <span class={pillCls} data-cx-label>{t("quote.cxMedium")}</span>
+          </label>
+          <label>
+            <input type="radio" name="qc-cx" value="1.6" class="peer sr-only" />
+            <span class={pillCls} data-cx-label>{t("quote.cxDetailed")}</span>
+          </label>
+        </div>
+      </div>
+
+      <!-- Urgencia -->
+      <div>
+        <label class="inline-flex items-center gap-4 cursor-pointer group">
+          <input id="qc-urgent" type="checkbox" class="peer sr-only" />
+          <span
+            class="relative w-10 h-5 shrink-0 rounded-full bg-stone-200 peer-checked:bg-stone-900 transition-colors
+                   after:content-[''] after:absolute after:top-0.5 after:left-0.5 after:w-4 after:h-4 after:rounded-full after:bg-white
+                   after:transition-transform peer-checked:after:translate-x-5"
+          />
+          <span class="flex flex-col">
+            <span class="font-body text-xs uppercase tracking-[0.2em] text-stone-700">{t("quote.urgent")}</span>
+            <span class="font-body text-[11px] text-stone-400">{t("quote.urgentHint")}</span>
+          </span>
+        </label>
+      </div>
+
+      <!-- Parámetros de costo -->
+      <details class="border-t border-stone-100 pt-6">
+        <summary class="font-body text-xs tracking-[0.3em] text-stone-400 hover:text-stone-900 uppercase cursor-pointer select-none transition-colors">
+          {t("quote.settings")}
+        </summary>
+        <div class="grid grid-cols-2 md:grid-cols-3 gap-x-6 gap-y-8 max-w-2xl mt-8">
+          <label class="block">
+            <span class={labelCls}>{t("quote.consumption")}</span>
+            <input id="qc-consumption" type="number" min="0" value="2000" class={inputCls} />
+          </label>
+          <label class="block">
+            <span class={labelCls}>{t("quote.otherMaterials")}</span>
+            <input id="qc-othermat" type="number" min="0" value="250" class={inputCls} />
+          </label>
+          <label class="block">
+            <span class={labelCls}>{t("quote.laborRate")}</span>
+            <input id="qc-rate" type="number" min="0" value="100" class={inputCls} />
+          </label>
+          <label class="block">
+            <span class={labelCls}>{t("quote.hoursPerM2")}</span>
+            <input id="qc-hours" type="number" min="0" value="10" class={inputCls} />
+          </label>
+          <label class="block">
+            <span class={labelCls}>{t("quote.profit")}</span>
+            <input id="qc-profit" type="number" min="0" value="100" class={inputCls} />
+          </label>
+          <label class="block">
+            <span class={labelCls}>{t("quote.colorSurcharge")}</span>
+            <input id="qc-colorpct" type="number" min="0" value="5" class={inputCls} />
+          </label>
+          <label class="block">
+            <span class={labelCls}>{t("quote.urgentSurcharge")}</span>
+            <input id="qc-urgentpct" type="number" min="0" value="25" class={inputCls} />
+          </label>
+        </div>
+      </details>
+    </div>
+
+    <!-- ===== Resumen ===== -->
+    <aside class="bg-stone-900 p-8 md:p-10 lg:sticky lg:top-28">
+      <p id="qc-summary-title" class="font-body text-xs tracking-[0.3em] text-stone-500 uppercase mb-8">
+        {t("quote.summary")}
+      </p>
+
+      <dl class="flex flex-col gap-3">
+        <div class="sum-row flex justify-between gap-4">
+          <dt class="font-body text-xs tracking-[0.15em] text-stone-400 uppercase">{t("quote.measures")}</dt>
+          <dd id="s-size" class="font-body text-xs text-white text-right">—</dd>
+        </div>
+        <div class="sum-row flex justify-between gap-4">
+          <dt class="font-body text-xs tracking-[0.15em] text-stone-400 uppercase">{t("quote.area")}</dt>
+          <dd id="s-area" class="font-body text-xs text-white text-right">—</dd>
+        </div>
+        <div class="sum-row flex justify-between gap-4">
+          <dt class="font-body text-xs tracking-[0.15em] text-stone-400 uppercase">{t("quote.complexity")}</dt>
+          <dd id="s-cx" class="font-body text-xs text-white text-right">—</dd>
+        </div>
+        <div class="sum-row flex justify-between gap-4">
+          <dt class="font-body text-xs tracking-[0.15em] text-stone-400 uppercase">{t("quote.colors")}</dt>
+          <dd id="s-colors" class="font-body text-xs text-white text-right">—</dd>
+        </div>
+        <div class="sum-row flex justify-between gap-4">
+          <dt class="font-body text-xs tracking-[0.15em] text-stone-400 uppercase">{t("quote.totalYarn")}</dt>
+          <dd id="s-yarn" class="font-body text-xs text-white text-right">—</dd>
+        </div>
+        <div class="sum-row flex justify-between gap-4">
+          <dt class="font-body text-xs tracking-[0.15em] text-stone-400 uppercase">{t("quote.yarnBought")}</dt>
+          <dd id="s-yarnbuy" class="font-body text-xs text-white text-right">—</dd>
+        </div>
+
+        <div class="h-px bg-stone-700 my-3" role="separator"></div>
+
+        <div class="sum-row flex justify-between gap-4">
+          <dt class="font-body text-xs tracking-[0.15em] text-stone-400 uppercase">{t("quote.yarnCost")}</dt>
+          <dd id="s-yarncost" class="font-body text-xs text-white text-right">—</dd>
+        </div>
+        <div class="sum-row flex justify-between gap-4">
+          <dt class="font-body text-xs tracking-[0.15em] text-stone-400 uppercase">{t("quote.materialsCost")}</dt>
+          <dd id="s-mat" class="font-body text-xs text-white text-right">—</dd>
+        </div>
+        <div class="sum-row flex justify-between gap-4">
+          <dt class="font-body text-xs tracking-[0.15em] text-stone-400 uppercase">{t("quote.laborCost")}</dt>
+          <dd id="s-labor" class="font-body text-xs text-white text-right">—</dd>
+        </div>
+        <div class="sum-row flex justify-between gap-4">
+          <dt class="font-body text-xs tracking-[0.15em] text-stone-300 uppercase">{t("quote.prodCost")}</dt>
+          <dd id="s-cost" class="font-body text-xs text-white font-medium text-right">—</dd>
+        </div>
+        <div class="sum-row flex justify-between gap-4">
+          <dt class="font-body text-xs tracking-[0.15em] text-stone-400 uppercase">{t("quote.profitLine")}</dt>
+          <dd id="s-profit" class="font-body text-xs text-white text-right">—</dd>
+        </div>
+        <div id="row-colorsur" class="sum-row flex justify-between gap-4" style="display:none">
+          <dt class="font-body text-xs tracking-[0.15em] text-stone-400 uppercase">{t("quote.colorsLine")}</dt>
+          <dd id="s-colorsur" class="font-body text-xs text-white text-right">—</dd>
+        </div>
+        <div id="row-urgentsur" class="sum-row flex justify-between gap-4" style="display:none">
+          <dt class="font-body text-xs tracking-[0.15em] text-stone-400 uppercase">{t("quote.urgentLine")}</dt>
+          <dd id="s-urgentsur" class="font-body text-xs text-white text-right">—</dd>
+        </div>
+      </dl>
+
+      <div class="h-px bg-stone-700 my-6" role="separator"></div>
+
+      <div class="flex items-end justify-between gap-4">
+        <span id="qc-total-label" class="font-body text-xs tracking-[0.3em] text-stone-400 uppercase pb-1.5">
+          {t("quote.total")}
+        </span>
+        <span id="s-total" class="font-display text-4xl md:text-5xl text-white leading-none tracking-wide">L 0</span>
+      </div>
+
+      <button
+        id="qc-copy"
+        type="button"
+        data-label={t("quote.copy")}
+        data-copied={t("quote.copied")}
+        class="mt-8 w-full border border-stone-600 text-white font-body text-xs uppercase tracking-[0.2em] py-3.5
+               hover:bg-white hover:text-stone-900 hover:border-white transition-colors cursor-pointer"
+      >
+        {t("quote.copy")}
+      </button>
+
+      <button
+        id="qc-print-btn"
+        type="button"
+        class="mt-3 w-full bg-white text-stone-900 font-body text-xs uppercase tracking-[0.2em] py-3.5
+               hover:bg-stone-200 transition-colors cursor-pointer"
+      >
+        {t("quote.print")}
+      </button>
+    </aside>
+  </div>
+
+  <!-- Hoja imprimible (solo resumen para el cliente, sin costos) -->
+  <div id="qc-print" class="hidden">
+    <div class="flex items-start justify-between">
+      <img src="/logo-horizontal-black.png" alt="Phantom Rugs Studio" class="h-14 w-auto" />
+      <div class="text-right">
+        <span class="block font-body text-[10px] tracking-[0.2em] uppercase text-stone-400 mb-1">{t("quote.date")}</span>
+        <span id="p-date" class="font-body text-sm text-stone-900"></span>
+      </div>
+    </div>
+
+    <h2 class="font-display text-6xl text-stone-900 tracking-wide leading-none mt-12 mb-8">
+      {t("quote.printTitle")}
+    </h2>
+
+    <div class="flex items-start gap-8 border-t border-stone-200 pt-8">
+      <img id="p-ref" alt={t("quote.refAlt")} class="hidden shrink-0 w-[5cm] max-h-[5cm] object-contain object-left-top" />
+      <dl class="flex-1 flex flex-col gap-4">
+        <div class="flex justify-between gap-4">
+          <dt class="font-body text-xs tracking-[0.2em] text-stone-400 uppercase">{t("quote.measures")}</dt>
+          <dd id="p-size" class="font-body text-sm text-stone-900 text-right"></dd>
+        </div>
+        <div class="flex justify-between gap-4">
+          <dt class="font-body text-xs tracking-[0.2em] text-stone-400 uppercase">{t("quote.area")}</dt>
+          <dd id="p-area" class="font-body text-sm text-stone-900 text-right"></dd>
+        </div>
+        <div class="flex justify-between gap-4">
+          <dt class="font-body text-xs tracking-[0.2em] text-stone-400 uppercase">{t("quote.colors")}</dt>
+          <dd id="p-colors" class="font-body text-sm text-stone-900 text-right"></dd>
+        </div>
+        <div id="p-urgent-row" class="flex justify-between gap-4" style="display:none">
+          <dt class="font-body text-xs tracking-[0.2em] text-stone-400 uppercase">{t("quote.urgent")}</dt>
+          <dd class="font-body text-sm text-stone-900 text-right">{t("quote.yes")}</dd>
+        </div>
+      </dl>
+    </div>
+
+    <div class="border-t border-stone-900 mt-10 pt-8 flex items-end justify-between">
+      <span class="font-body text-xs tracking-[0.3em] uppercase text-stone-500 pb-2">{t("quote.total")}</span>
+      <span id="p-total" class="font-display text-6xl text-stone-900 leading-none tracking-wide"></span>
+    </div>
+
+    <p class="font-body text-[11px] text-stone-400 mt-10">{t("quote.printNote")}</p>
+  </div>
+
+  <!-- Plantilla de fila de hilo -->
+  <template id="qc-yarn-template">
+    <div class="yarn-row grid grid-cols-2 md:grid-cols-[1fr_190px_130px_90px_auto] gap-x-4 gap-y-3 items-end">
+      <label class="block col-span-2 md:col-span-1">
+        <span class={labelCls}>{t("quote.yarnName")}</span>
+        <input data-f="name" type="text" class={inputCls} />
+      </label>
+      <label class="block col-span-2 md:col-span-1">
+        <span class={labelCls}>{t("quote.yarnType")}</span>
+        <select data-f="type" class={`${inputCls} cursor-pointer`}>
+          <option value="pack5">{t("quote.typePack5")}</option>
+          <option value="pack10">{t("quote.typePack10")}</option>
+          <option value="single100">{t("quote.typeSingle100")}</option>
+          <option value="single25">{t("quote.typeSingle25")}</option>
+        </select>
+      </label>
+      <label class="block">
+        <span
+          class={labelCls}
+          data-price-label
+          data-pack={t("quote.priceLabelPack")}
+          data-single={t("quote.priceLabelSingle")}
+        >{t("quote.priceLabelPack")}</span>
+        <input data-f="price" type="number" min="0" step="0.01" inputmode="decimal" class={inputCls} />
+      </label>
+      <label class="block">
+        <span class={labelCls}>{t("quote.yarnQty")}</span>
+        <input data-f="qty" type="number" min="0" step="1" inputmode="numeric" value="1" class={inputCls} />
+      </label>
+      <button
+        type="button"
+        class="qc-remove justify-self-start md:justify-self-auto text-stone-300 hover:text-stone-900 transition-colors text-xl leading-none pb-2 cursor-pointer"
+        aria-label={t("quote.remove")}
+        title={t("quote.remove")}
+      >×</button>
+    </div>
+  </template>
+</section>
+
+<style is:global>
+  @media print {
+    body > *:not(#qc-print) {
+      display: none !important;
+    }
+    #qc-print {
+      display: block !important;
+      padding: 2.5rem 3rem;
+    }
+  }
+</style>
+
+<script>
+  const root = document.getElementById("quote-calc")!;
+  const yarnsBox = document.getElementById("qc-yarns")!;
+  const tpl = document.getElementById("qc-yarn-template") as HTMLTemplateElement;
+
+  const KEY = "prs-cotizador-v2";
+  const IMG_KEY = "prs-cotizador-ref";
+  const fmtL = new Intl.NumberFormat("es-HN", {
+    style: "currency",
+    currency: "HNL",
+    maximumFractionDigits: 0,
+  });
+  const fmtN = new Intl.NumberFormat("es-HN", { maximumFractionDigits: 0 });
+
+  const $ = (id: string) => document.getElementById(id) as HTMLInputElement;
+  const val = (id: string) => {
+    const v = parseFloat($(id).value);
+    return Number.isFinite(v) && v >= 0 ? v : 0;
+  };
+  const setText = (id: string, text: string) => {
+    document.getElementById(id)!.textContent = text;
+  };
+
+  // Presentaciones de compra: cuántos rollos trae y cuántos gramos pesa cada rollo
+  const FORMATS: Record<string, { rolls: number; grams: number }> = {
+    pack5: { rolls: 5, grams: 100 },
+    pack10: { rolls: 10, grams: 25 },
+    single100: { rolls: 1, grams: 100 },
+    single25: { rolls: 1, grams: 25 },
+  };
+  const YARN_FIELDS = ["name", "type", "price", "qty"];
+
+  function syncPriceLabel(row: Element) {
+    const type = (row.querySelector('[data-f="type"]') as HTMLSelectElement).value;
+    const label = row.querySelector("[data-price-label]") as HTMLElement;
+    label.textContent = (FORMATS[type]?.rolls ?? 1) > 1 ? label.dataset.pack! : label.dataset.single!;
+  }
+
+  function addYarn(data: Record<string, string> = {}) {
+    const node = tpl.content.firstElementChild!.cloneNode(true) as HTMLElement;
+    for (const k of YARN_FIELDS) {
+      const inp = node.querySelector(`[data-f="${k}"]`) as HTMLInputElement;
+      if (data[k] != null && data[k] !== "" && !(k === "type" && !FORMATS[data[k]])) inp.value = data[k];
+    }
+    syncPriceLabel(node);
+    yarnsBox.appendChild(node);
+  }
+
+  function getRows() {
+    return [...yarnsBox.querySelectorAll(".yarn-row")].map((r) => {
+      const f = (k: string) => (r.querySelector(`[data-f="${k}"]`) as HTMLInputElement).value;
+      return Object.fromEntries(YARN_FIELDS.map((k) => [k, f(k)])) as Record<string, string>;
+    });
+  }
+
+  function save() {
+    const cx = (document.querySelector('input[name="qc-cx"]:checked') as HTMLInputElement)?.value ?? "1";
+    const data = {
+      width: $("qc-width").value,
+      height: $("qc-height").value,
+      cx,
+      urgent: $("qc-urgent").checked,
+      consumption: $("qc-consumption").value,
+      othermat: $("qc-othermat").value,
+      rate: $("qc-rate").value,
+      hours: $("qc-hours").value,
+      profit: $("qc-profit").value,
+      colorpct: $("qc-colorpct").value,
+      urgentpct: $("qc-urgentpct").value,
+      rows: getRows(),
+    };
+    try { localStorage.setItem(KEY, JSON.stringify(data)); } catch {}
+  }
+
+  function load() {
+    let d: any = null;
+    try { d = JSON.parse(localStorage.getItem(KEY) ?? "null"); } catch {}
+    // Versión anterior (hilos por %): conservar parámetros, descartar filas de hilo
+    if (!d) {
+      try { d = JSON.parse(localStorage.getItem("prs-cotizador-v1") ?? "null"); } catch {}
+      if (d) delete d.rows;
+    }
+    if (d) {
+      const set = (id: string, v: unknown) => { if (v != null && v !== "") $(id).value = String(v); };
+      set("qc-width", d.width); set("qc-height", d.height);
+      set("qc-consumption", d.consumption); set("qc-othermat", d.othermat);
+      set("qc-rate", d.rate); set("qc-hours", d.hours);
+      set("qc-profit", d.profit); set("qc-colorpct", d.colorpct); set("qc-urgentpct", d.urgentpct);
+      $("qc-urgent").checked = !!d.urgent;
+      const radio = document.querySelector(`input[name="qc-cx"][value="${d.cx}"]`) as HTMLInputElement;
+      if (radio) radio.checked = true;
+      if (Array.isArray(d.rows) && d.rows.length) {
+        d.rows.forEach((r: Record<string, string>) => addYarn(r));
+        return;
+      }
+    }
+    addYarn();
+  }
+
+  function recalc() {
+    const w = val("qc-width");
+    const h = val("qc-height");
+    const area = (w * h) / 10000; // m²
+
+    // Estimado de referencia según la medida; el costo sale de lo que se compra
+    const neededGrams = area * val("qc-consumption");
+
+    const rows = getRows();
+    let yarnCost = 0;
+    let totalRolls = 0;
+    let boughtGrams = 0;
+    for (const r of rows) {
+      const fmt = FORMATS[r.type] ?? FORMATS.pack5;
+      const qty = Math.max(0, parseFloat(r.qty) || 0);
+      const price = Math.max(0, parseFloat(r.price) || 0);
+      yarnCost += qty * price;
+      totalRolls += qty * fmt.rolls;
+      boughtGrams += qty * fmt.rolls * fmt.grams;
+    }
+
+    const cxInput = document.querySelector('input[name="qc-cx"]:checked') as HTMLInputElement;
+    const cxFactor = parseFloat(cxInput?.value ?? "1");
+    const cxLabel = cxInput?.parentElement?.querySelector("[data-cx-label]")?.textContent?.trim() ?? "";
+
+    const materialsCost = area * val("qc-othermat");
+    const laborHours = area * val("qc-hours") * cxFactor;
+    const laborCost = laborHours * val("qc-rate");
+
+    const prodCost = yarnCost + materialsCost + laborCost;
+    const profitPct = val("qc-profit");
+    const profitAmt = prodCost * (profitPct / 100);
+    const basePrice = prodCost + profitAmt;
+
+    const colors = rows.length;
+    const extraColors = Math.max(0, colors - 3);
+    const colorSur = basePrice * ((extraColors * val("qc-colorpct")) / 100);
+
+    const urgent = $("qc-urgent").checked;
+    const urgentSur = urgent ? (basePrice + colorSur) * (val("qc-urgentpct") / 100) : 0;
+
+    const total = basePrice + colorSur + urgentSur;
+
+    // Pintar resumen
+    setText("s-size", `${fmtN.format(w)} × ${fmtN.format(h)} cm`);
+    setText("s-area", `${area.toFixed(2)} m²`);
+    setText("s-cx", cxLabel);
+    setText("s-colors", String(colors));
+    setText("s-yarn", `${fmtN.format(neededGrams)} g`);
+    setText("s-yarnbuy", `${fmtN.format(boughtGrams)} g · ${fmtN.format(totalRolls)} ${root.dataset.rolls}`);
+
+    const status = document.getElementById("qc-yarn-status")!;
+    const diff = boughtGrams - neededGrams;
+    if (neededGrams <= 0 || boughtGrams <= 0) {
+      status.textContent = "";
+    } else {
+      const short = diff < 0;
+      status.textContent = (short ? root.dataset.short! : root.dataset.ok!).replace("{g}", fmtN.format(Math.abs(diff)));
+      status.classList.toggle("text-amber-700", short);
+      status.classList.toggle("text-stone-400", !short);
+    }
+    setText("s-yarncost", fmtL.format(yarnCost));
+    setText("s-mat", fmtL.format(materialsCost));
+    setText("s-labor", `${fmtL.format(laborCost)} · ${laborHours.toFixed(1)} h`);
+    setText("s-cost", fmtL.format(prodCost));
+    setText("s-profit", `+ ${fmtL.format(profitAmt)} (${fmtN.format(profitPct)}%)`);
+    setText("s-colorsur", `+ ${fmtL.format(colorSur)}`);
+    setText("s-urgentsur", `+ ${fmtL.format(urgentSur)}`);
+    setText("s-total", fmtL.format(total));
+
+    document.getElementById("row-colorsur")!.style.display = colorSur > 0 ? "flex" : "none";
+    document.getElementById("row-urgentsur")!.style.display = urgentSur > 0 ? "flex" : "none";
+  }
+
+  // La hoja imprimible vive como hija directa de <body> para poder ocultar
+  // todo lo demás con `body > *:not(#qc-print)` al imprimir
+  const printSheet = document.getElementById("qc-print")!;
+  document.body.appendChild(printSheet);
+
+  // Imagen de referencia: se reduce a máx. 1600 px en JPEG para que quepa en localStorage
+  const refFile = $("qc-ref-file");
+  const refDrop = document.getElementById("qc-ref-drop")!;
+  const refPreview = document.getElementById("qc-ref-preview")!;
+  const refImg = document.getElementById("qc-ref-img") as HTMLImageElement;
+  const printRef = document.getElementById("p-ref") as HTMLImageElement;
+
+  function showRef(src: string | null) {
+    refImg.src = printRef.src = src ?? "";
+    refPreview.classList.toggle("hidden", !src);
+    refDrop.classList.toggle("hidden", !!src);
+    refDrop.classList.toggle("flex", !src);
+    printRef.classList.toggle("hidden", !src);
+  }
+
+  function setRef(file: File | undefined) {
+    if (!file || !file.type.startsWith("image/")) return;
+    const url = URL.createObjectURL(file);
+    const img = new Image();
+    img.onload = () => {
+      const scale = Math.min(1, 1600 / Math.max(img.width, img.height));
+      const canvas = document.createElement("canvas");
+      canvas.width = Math.round(img.width * scale);
+      canvas.height = Math.round(img.height * scale);
+      const ctx = canvas.getContext("2d")!;
+      ctx.fillStyle = "#fff"; // fondo blanco para PNG con transparencia
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+      URL.revokeObjectURL(url);
+      const data = canvas.toDataURL("image/jpeg", 0.85);
+      showRef(data);
+      try { localStorage.setItem(IMG_KEY, data); } catch {}
+    };
+    img.src = url;
+  }
+
+  refFile.addEventListener("change", () => {
+    setRef(refFile.files?.[0]);
+    refFile.value = "";
+  });
+  refDrop.addEventListener("dragover", (e) => {
+    e.preventDefault();
+    refDrop.classList.add("border-stone-900");
+  });
+  refDrop.addEventListener("dragleave", () => refDrop.classList.remove("border-stone-900"));
+  refDrop.addEventListener("drop", (e) => {
+    e.preventDefault();
+    refDrop.classList.remove("border-stone-900");
+    setRef(e.dataTransfer?.files[0]);
+  });
+  document.getElementById("qc-ref-remove")!.addEventListener("click", () => {
+    showRef(null);
+    try { localStorage.removeItem(IMG_KEY); } catch {}
+  });
+
+  function printQuote() {
+    const from = (id: string) => document.getElementById(id)!.textContent!.trim();
+    const lang = document.documentElement.lang === "es" ? "es-HN" : "en-US";
+    setText("p-date", new Intl.DateTimeFormat(lang, { day: "numeric", month: "long", year: "numeric" }).format(new Date()));
+    setText("p-size", from("s-size"));
+    setText("p-area", from("s-area"));
+
+    const names = getRows().map((r) => r.name.trim()).filter(Boolean);
+    setText("p-colors", names.length ? `${from("s-colors")} · ${names.join(", ")}` : from("s-colors"));
+
+    document.getElementById("p-urgent-row")!.style.display = $("qc-urgent").checked ? "flex" : "none";
+    setText("p-total", from("s-total"));
+    window.print();
+  }
+
+  function copySummary() {
+    const title = document.getElementById("qc-summary-title")!.textContent!.trim();
+    const lines = [`PHANTOM RUGS STUDIO — ${title}`, ""];
+    document.querySelectorAll(".sum-row").forEach((row) => {
+      if ((row as HTMLElement).style.display === "none") return;
+      const dt = row.querySelector("dt")!.textContent!.trim();
+      const dd = row.querySelector("dd")!.textContent!.trim();
+      lines.push(`${dt}: ${dd}`);
+    });
+    const totalLabel = document.getElementById("qc-total-label")!.textContent!.trim();
+    lines.push("", `${totalLabel}: ${document.getElementById("s-total")!.textContent!.trim()}`);
+
+    const btn = document.getElementById("qc-copy")!;
+    navigator.clipboard.writeText(lines.join("\n")).then(() => {
+      btn.textContent = btn.dataset.copied!;
+      setTimeout(() => { btn.textContent = btn.dataset.label!; }, 1500);
+    });
+  }
+
+  root.addEventListener("input", (e) => {
+    const target = e.target as HTMLElement;
+    if (target === refFile) return;
+    if (target.matches('[data-f="type"]')) syncPriceLabel(target.closest(".yarn-row")!);
+    recalc(); save();
+  });
+
+  root.addEventListener("click", (e) => {
+    const target = e.target as HTMLElement;
+    if (target.closest("#qc-add-yarn")) {
+      addYarn();
+      recalc(); save();
+    } else if (target.closest(".qc-remove")) {
+      if (yarnsBox.querySelectorAll(".yarn-row").length > 1) {
+        target.closest(".yarn-row")!.remove();
+        recalc(); save();
+      }
+    } else if (target.closest("#qc-copy")) {
+      copySummary();
+    } else if (target.closest("#qc-print-btn")) {
+      printQuote();
+    }
+  });
+
+  load();
+  try { showRef(localStorage.getItem(IMG_KEY)); } catch {}
+  recalc();
+</script>

@@ -7,11 +7,13 @@ import { getLangFromUrl } from "../i18n/utils";
 interface Props {
   title: string;
   description?: string;
+  noindex?: boolean;
 }
 
 const {
   title,
   description = "Phantom Rugs Studio — Handcrafted rugs with soul.",
+  noindex = false,
 } = Astro.props;
 const lang = getLangFromUrl(Astro.url);
 ---
@@ -30,9 +32,10 @@ const lang = getLangFromUrl(Astro.url);
       rel="stylesheet"
     />
     <meta name="description" content={description} />
+    {noindex && <meta name="robots" content="noindex, nofollow" />}
     <title>{title} — Phantom Rugs Studio</title>
   </head>
-  <body>
+  <body class="bg-white">
     <Navbar />
 
     <main class="pt-[73px]">

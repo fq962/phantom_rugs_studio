@@ -1,0 +1,117 @@
+---
+export const prerender = false;
+
+import Layout from "../../layouts/Layout.astro";
+import QuoteCalculator from "../../components/QuoteCalculator.astro";
+
+const COOKIE = "prs_admin";
+const PATH = "/admin/quote";
+const SESSION_HOURS = 8;
+const password = import.meta.env.ADMIN_PASSWORD;
+
+async function sha256(text: string) {
+  const buf = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(text));
+  return [...new Uint8Array(buf)].map((b) => b.toString(16).padStart(2, "0")).join("");
+}
+
+// La cookie guarda "<vencimiento>.<hash>": el hash amarra la contraseña con el
+// vencimiento, así que no se puede alargar la sesión editando la cookie.
+// Si se cambia ADMIN_PASSWORD, todas las sesiones abiertas dejan de valer.
+const sign = (exp: number) => sha256(`prs-admin:${password}:${exp}`);
+
+async function isValid(value: string | undefined) {
+  if (!password || !value) return false;
+  const [expStr, hash] = value.split(".");
+  const exp = Number(expStr);
+  return Number.isFinite(exp) && exp > Date.now() && hash === (await sign(exp));
+}
+
+let error = false;
+
+if (Astro.request.method === "POST") {
+  const form = await Astro.request.formData();
+  if (form.has("logout")) {
+    Astro.cookies.delete(COOKIE, { path: "/admin" });
+    return Astro.redirect(PATH, 303);
+  }
+  const attempt = String(form.get("password") ?? "");
+  if (password && (await sha256(attempt)) === (await sha256(password))) {
+    const exp = Date.now() + SESSION_HOURS * 60 * 60 * 1000;
+    Astro.cookies.set(COOKIE, `${exp}.${await sign(exp)}`, {
+      path: "/admin",
+      httpOnly: true,
+      secure: import.meta.env.PROD,
+      sameSite: "strict",
+      maxAge: SESSION_HOURS * 60 * 60,
+    });
+    return Astro.redirect(PATH, 303);
+  }
+  error = true;
+}
+
+const authed = await isValid(Astro.cookies.get(COOKIE)?.value);
+Astro.response.headers.set("Cache-Control", "private, no-store");
+---
+
+<Layout title="Cotizador" noindex>
+  {authed ? (
+    <>
+      <section class="px-6 md:px-12 pt-8 pb-10 border-b border-stone-100 flex items-end justify-between gap-6">
+        <div>
+          <p class="font-body text-xs tracking-[0.3em] text-stone-400 uppercase mb-3">
+            Uso interno
+          </p>
+          <h1 class="font-display text-[clamp(2.5rem,7vw,5rem)] text-stone-900 leading-none tracking-wide">
+            COTIZADOR
+          </h1>
+        </div>
+        <form method="post">
+          <button
+            name="logout"
+            value="1"
+            class="font-body text-xs uppercase tracking-[0.2em] text-stone-500 hover:text-stone-900 border-b border-stone-300 hover:border-stone-900 pb-0.5 transition-colors cursor-pointer"
+          >
+            Cerrar sesión
+          </button>
+        </form>
+      </section>
+
+      <QuoteCalculator />
+    </>
+  ) : (
+    <section class="px-6 md:px-12 py-24 md:py-32 flex justify-center">
+      <form method="post" class="w-full max-w-sm">
+        <p class="font-body text-xs tracking-[0.3em] text-stone-400 uppercase mb-3">Uso interno</p>
+        <h1 class="font-display text-5xl text-stone-900 leading-none tracking-wide mb-10">COTIZADOR</h1>
+
+        <label class="block">
+          <span class="block font-body text-[11px] tracking-[0.2em] text-stone-400 uppercase mb-1">Contraseña</span>
+          <input
+            name="password"
+            type="password"
+            required
+            autofocus
+            autocomplete="current-password"
+            class="w-full bg-transparent border-b border-stone-200 focus:border-stone-900 outline-none py-2 font-body text-sm text-stone-900 transition-colors"
+          />
+        </label>
+
+        {!password && (
+          <p class="font-body text-xs text-amber-700 mt-4">
+            Falta configurar la variable de entorno ADMIN_PASSWORD en el servidor.
+          </p>
+        )}
+        {password && error && (
+          <p class="font-body text-xs text-red-700 mt-4">Contraseña incorrecta.</p>
+        )}
+
+        <button
+          type="submit"
+          class="mt-8 w-full bg-stone-900 text-white font-body text-xs uppercase tracking-[0.2em] py-3.5 hover:bg-stone-700 transition-colors cursor-pointer"
+        >
+          Entrar
+        </button>
+      </form>
+    </section>
+  )}
+</Layout>
